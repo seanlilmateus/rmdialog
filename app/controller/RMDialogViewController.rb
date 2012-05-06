@@ -35,9 +35,8 @@ class RMDialogViewController < UIViewController
       section(name:"Second Section") do
         component = [*1..12]
         component2 = ["A", "B"]
-        
         picker items:[component, component2], value:"3 B", title:"Key" do
-          NSLog("Selected indexes %@", )
+          NSLog("Selected indexes")
         end
         
         segment items:["Option 1", "Option 2", "Option 3"], selected:1, title:"Radio"
@@ -74,7 +73,7 @@ class RMDialogViewController < UIViewController
         end
       end
       
-      # section Section
+      # section Selection
       selection items:["Football", "Soccer", "Formula 1"], title:"Simple select"
       
       # Dynamic Sections
