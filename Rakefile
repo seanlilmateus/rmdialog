@@ -14,5 +14,6 @@ Motion::Project::App.setup do |app|
       :target => 'QuickDialog',
       :headers_dir => 'quickdialog')
   app.frameworks += ['MapKit', 'CoreLocation']
+  app.device_family = [:iphone]
   
 end

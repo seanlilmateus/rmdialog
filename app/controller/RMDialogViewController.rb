@@ -35,11 +35,10 @@ class RMDialogViewController < UIViewController
       section(name:"Second Section") do
         component = [*1..12]
         component2 = ["A", "B"]
-        picker items:[component, component2], value:"3 B", title:"Key" do
-          NSLog("Selected indexes")
-        end
+        picker items:[component, component2], value:"3 B", title:"Key"
         
         segment items:["Option 1", "Option 2", "Option 3"], selected:1, title:"Radio"
+        
       end.footer = "More controls will be added."
       
       # Section without a name

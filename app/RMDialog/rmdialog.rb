@@ -89,7 +89,7 @@ module RMDialog
     def button(h={}, &blck)
       button = QButtonElement.alloc.initWithTitle(h[:title])
       button.controllerAction = h[:action] if h[:action]
-      button.onSelected = blck if block_given?
+      button.onSelected = -> { blck[] } if block_given?
       @section.addElement(button)
       button
     end
@@ -122,10 +122,10 @@ module RMDialog
     end
     
     def picker(h={}, &blck)
-      picker = QPickerElement.alloc.initWithTitle(h[:title], items:h[:items], value:h[:value])
-      picker.onValueChanged = blck if block_given?
-      @section.addElement(picker)
-      picker
+      element = QPickerElement.alloc.initWithTitle(h[:title], items:h[:items], value:h[:value])
+      #element.onValueChanged = blck if block_given?
+      section.addElement(element)
+      element
     end
        
     def time(h={})
