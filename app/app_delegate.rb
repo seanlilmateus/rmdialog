@@ -6,5 +6,5 @@ class AppDelegate
     @window.rootViewController = nav
     @window.makeKeyAndVisible
     true
-  end
+  end  
 end

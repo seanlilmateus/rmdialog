@@ -15,7 +15,7 @@ module RMDialog
     
     # create a QSection
     def section(title = nil, &blck)
-      section = RMDSection.new(title, &blck).section
+      section = RMDSection.alloc.init(title, &blck)
       @root.addSection(section)
       section
     end
@@ -65,13 +65,14 @@ module RMDialog
   # QSection Wrapper
   class RMDSection
     attr_reader :section
-    def initialize(title, &block)
+    def init(title, &block)
       @section = title.nil? ?  QSection.alloc.init : QSection.alloc.initWithTitle(title[:name])
       instance_eval(&block)
+      @section
     end
     
     def radio(h={})
-      radio = case h[:items]
+      ele = case h[:items]
         when Hash
           QRadioElement.alloc.initWithDict(h[:items], selected:h[:selected], title:h[:title])
         when Array
@@ -81,80 +82,79 @@ module RMDialog
         else
           QRadioElement.alloc.init
         end
-      radio.controllerAction = h[:action] if h[:action]
-      @section.addElement(radio)
-      radio
+      ele.controllerAction = h[:action] if h[:action]
+      section.addElement(ele)
+      ele
     end
     
     def button(h={}, &blck)
-      button = QButtonElement.alloc.initWithTitle(h[:title])
-      button.controllerAction = h[:action] if h[:action]
-      button.onSelected = -> { blck[] } if block_given?
-      @section.addElement(button)
-      button
+      ele = QButtonElement.alloc.initWithTitle(h[:title])
+      ele.onSelected = blck if block_given? 
+      section.addElement(ele)
+      ele
     end
     
     def float(h={})
-      slider = QFloatElement.alloc.initWithTitle(h[:title], value:h[:value])
-      slider.key = h[:key]
-      @section.addElement(slider)
-      slider
+      ele = QFloatElement.alloc.initWithTitle(h[:title], value:h[:value])
+      ele.key = h[:key]
+      section.addElement(ele)
+      ele
     end
 
     def decimal(h={})
-      slider = QDecimalElement.alloc.initWithTitle(h[:title], value:h[:value])
-      slider.key = h[:key]
-      slider.fractionDigits = h[:fraction]
-      @section.addElement(slider)
-      slider
+      ele = QDecimalElement.alloc.initWithTitle(h[:title], value:h[:value])
+      ele.key = h[:key]
+      ele.fractionDigits = h[:fraction]
+      section.addElement(ele)
+      ele
     end
         
     def label(h={})
-      label = QLabelElement.alloc.initWithTitle(h[:title], Value:h[:value])
-      @section.addElement(label)
-      label
+      ele = QLabelElement.alloc.initWithTitle(h[:title], Value:h[:value])
+      section.addElement(ele)
+      ele
     end
     
     def segment(h={}) # "Option 1", @"Option 2", @"Option 3"
-      element = QSegmentedElement.alloc.initWithItems(h[:items], selected:h[:selected], title:h[:title])
-      @section.addElement(element)
-      element
+      ele = QSegmentedElement.alloc.initWithItems(h[:items], selected:h[:selected], title:h[:title])
+      section.addElement(ele)
+      ele
     end
     
     def picker(h={}, &blck)
-      element = QPickerElement.alloc.initWithTitle(h[:title], items:h[:items], value:h[:value])
-      #element.onValueChanged = blck if block_given?
-      section.addElement(element)
-      element
+      ele = QPickerElement.alloc.initWithTitle(h[:title], items:h[:items], value:h[:value])
+      #ele.onValueChanged = blck if block_given?
+      section.addElement(ele)
+      ele
     end
        
     def time(h={})
-      timer = QDateTimeInlineElement.alloc.initWithTitle(h[:title], date:h[:date])
-      timer.key = h[:key] if h[:key]
-      timer.mode = h[:mode] if h[:mode]
-      @section.addElement(timer)
-      timer
+      ele = QDateTimeInlineElement.alloc.initWithTitle(h[:title], date:h[:date])
+      ele.key = h[:key] if h[:key]
+      ele.mode = h[:mode] if h[:mode]
+      section.addElement(ele)
+      ele
     end
     
     def badge(h={}, &blck)
-      badge = RMDBadge.alloc.initWithTitle(h[:title]||"", Value:h[:value].to_s||"0")
-      @section.addElement(badge)
-      badge.instance_eval(&blck) if block_given?
-      badge
+      ele = RMDBadge.alloc.initWithTitle(h[:title]||"", Value:h[:value].to_s||"0")
+      section.addElement(ele)
+      ele.instance_eval(&blck) if block_given?
+      ele
     end
         
     def entry(h={title:"", value:"", placeholder:"", secure:false}, &blck)
-      entry = RMDEntry.alloc.initWithTitle(h[:title], Value:h[:value], Placeholder:h[:placeholder]) 
-      entry.secureTextEntry = h[:secure]    
-      @section.addElement(entry)
-      entry.instance_eval(&blck) if block_given?
-      entry
+      ele = RMDEntry.alloc.initWithTitle(h[:title], Value:h[:value], Placeholder:h[:placeholder]) 
+      ele.secureTextEntry = h[:secure]    
+      section.addElement(ele)
+      ele.instance_eval(&blck) if block_given?
+      ele
     end
         
     def boolean(hash={})
-      bool = QBooleanElement.alloc.initWithTitle(hash[:title], BoolValue:hash[:value]||false)
-      @section.addElement bool
-      bool
+      ele = QBooleanElement.alloc.initWithTitle(hash[:title], BoolValue:hash[:value]||false)
+      section.addElement(ele)
+      ele
     end
   end
 end

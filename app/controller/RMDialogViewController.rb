@@ -10,11 +10,12 @@ class RMDialogViewController < UIViewController
   end
     
   
-  def create_dialog
+  def create_dialog    
     root = RMDialog.create(title:"Rubymotion Dialog", grouped:true) do
+      url = "http://www.apple.com"
+      
       # First Section with Name
-      section(name: "Example Section") do
-
+      section(name: "Example Section") do        
         label title:"Hello", value:"World"
       
         boolean title:"Music", value:true
@@ -28,7 +29,7 @@ class RMDialogViewController < UIViewController
         time title:"Time element", date: NSDate.date, key:"date1", mode: UIDatePickerModeTime
         
         elems = ["Ferrari", "McLaren", "Lotus"]
-        radio items: elems, selected:0, title:"Array", action:'dance:'        
+        radio items: elems, selected:0, title:"Array", action:'action:'        
       end
       
       #second Section
@@ -42,22 +43,16 @@ class RMDialogViewController < UIViewController
       end.footer = "More controls will be added."
       
       # Section without a name
-      section do
+      section do        
         label title:"Crazy", value:"Shit"
         
         elems =  {"Ferrari"=>"FerrariObj", "McLaren"=>"McLarenObj", "Mercedes"=>"MercedesObj"}
         radio items:elems, selected:0, title:"Hash", action:'action:'
         
         # button
-        button title:"login" do
-          alert = UIAlertView.alloc.initWithTitle("I Alert you", 
-                                          message:"Do you want to be alerted?",
-                                         delegate: self,
-                                cancelButtonTitle: "OK", 
-                                otherButtonTitles:nil)
-          alert.show    
+        button title:"open Apple.com" do
+          UIApplication.sharedApplication.openURL(NSURL.URLWithString("http://news.ycombinator.com/"))
         end
-        
         
         badge title: "With a badge", value: 10  do
           background_color UIColor.redColor
@@ -88,5 +83,5 @@ class RMDialogViewController < UIViewController
     
     navigation = RMDialogController.controllerWithNavigationForRoot(root)
     self.presentModalViewController(navigation, animated:false)
-  end  
+  end   
 end
