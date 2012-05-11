@@ -62,6 +62,87 @@ module RMDialog
     end
   end
   
+  class RMQBooleanElement < QBooleanElement
+    def block=(value); @block = value; end
+    def switched(bool_switch)
+      @block[bool_switch.isOn] #isOn
+      super
+    end
+  end
+  
+  class RMQRadioElement < QRadioElement
+    attr_accessor :block
+    def setSelected(a_selected)
+      @block[self.items[a_selected]] if @block
+      super
+    end
+  end
+  
+  class RMQFloatElement < QLabelElement
+    attr_accessor :float_value, :block
+    
+    def initWithTitle(title, Value:value)
+      if super(title, nil)
+        @float_value = value
+      end
+      self
+    end
+    
+    def initWithValue(value)
+      if init
+        @float_value = value
+      end
+      self
+    end
+    
+    def fetchValueIntoObject(obj)
+      return if self.key.nil?
+      obj.setValue(@float_value, forKey:self.key)
+    end
+    
+    def calculateSliderWidth(view, cell:cell)
+      return view.contentSize.width - 40 if self.title.nil?
+      view.contentSize.width - cell.textLabel.text.sizeWithFont(UIFont.boldSystemFontOfSize(17)).width - 50
+    end
+    
+    def value_changed(slider)
+      @block[slider.value]
+      @float_value = slider.value
+    end
+    
+    def getCellForTableView(tableView, controller:controller)
+        cell = super
+        slider = UISlider.alloc.initWithFrame CGRectMake(0, 0, self.calculateSliderWidth(tableView, cell:cell), 20)
+        slider.addTarget(self, action:'value_changed:', forControlEvents:UIControlEventValueChanged)
+        slider.autoresizingMask = UIViewAutoresizingFlexibleWidth
+        slider.value = @float_value
+        cell.accessoryView = slider
+        cell
+    end
+  end
+  
+  class RMQSegmentedElement < QSegmentedElement
+    def block=(value); @block = value; end
+    def handle_segmented(control)
+      handleSegmentedControlValueChanged(control)
+      @block[self.items[self.selected]]
+    end
+    
+    def getCellForTableView(tableView, controller:controller)
+       super
+       cell = QTableViewCell.alloc.init
+       cell.backgroundView = UIView.alloc.initWithFrame CGRectMake(0, 0, 0, 0)
+       cell.backgroundColor = UIColor.clearColor
+       control = UISegmentedControl.alloc.initWithItems(self.items)
+       control.addTarget(self, action:'handle_segmented:', forControlEvents:UIControlEventValueChanged)
+       control.frame = CGRectMake(9, 0, 302, 46);
+       control.segmentedControlStyle = UISegmentedControlStyleBar
+       control.selectedSegmentIndex = self.selected
+
+       cell.addSubview(control)
+       cell
+    end
+  end
   # QSection Wrapper
   class RMDSection
     attr_reader :section
@@ -71,18 +152,19 @@ module RMDialog
       @section
     end
     
-    def radio(h={})
+    def radio(h={}, &blck)
       ele = case h[:items]
         when Hash
-          QRadioElement.alloc.initWithDict(h[:items], selected:h[:selected], title:h[:title])
+          RMQRadioElement.alloc.initWithDict(h[:items], selected:h[:selected], title:h[:title])
         when Array
-          QRadioElement.alloc.initWithItems(h[:items], selected:h[:selected], title:h[:title])
+          RMQRadioElement.alloc.initWithItems(h[:items], selected:h[:selected], title:h[:title])
         when String
-          QRadioElement.alloc.initWithKey(h[:items])
+          RMQRadioElement.alloc.initWithKey(h[:items])
         else
-          QRadioElement.alloc.init
+          RMQRadioElement.alloc.init
         end
-      ele.controllerAction = h[:action] if h[:action]
+      
+      ele.block = blck if block_given?      
       section.addElement(ele)
       ele
     end
@@ -94,8 +176,9 @@ module RMDialog
       ele
     end
     
-    def float(h={})
-      ele = QFloatElement.alloc.initWithTitle(h[:title], value:h[:value])
+    def float(h={}, &blck)
+      ele = RMQFloatElement.alloc.initWithTitle(h[:title], Value:h[:value])
+      ele.block = blck if block_given?
       ele.key = h[:key]
       section.addElement(ele)
       ele
@@ -115,8 +198,9 @@ module RMDialog
       ele
     end
     
-    def segment(h={}) # "Option 1", @"Option 2", @"Option 3"
-      ele = QSegmentedElement.alloc.initWithItems(h[:items], selected:h[:selected], title:h[:title])
+    def segment(h={}, &blck) # "Option 1", @"Option 2", @"Option 3"
+      ele = RMQSegmentedElement.alloc.initWithItems(h[:items], selected:h[:selected], title:h[:title])
+      ele.block = blck if block_given?
       section.addElement(ele)
       ele
     end
@@ -151,8 +235,9 @@ module RMDialog
       ele
     end
         
-    def boolean(hash={})
-      ele = QBooleanElement.alloc.initWithTitle(hash[:title], BoolValue:hash[:value]||false)
+    def boolean(hash={}, &blck)
+      ele = RMQBooleanElement.alloc.initWithTitle(hash[:title], BoolValue:hash[:value]||false)
+      ele.block = blck if block_given?
       section.addElement(ele)
       ele
     end

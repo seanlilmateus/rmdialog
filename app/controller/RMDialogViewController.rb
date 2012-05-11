@@ -18,18 +18,26 @@ class RMDialogViewController < UIViewController
       section(name: "Example Section") do        
         label title:"Hello", value:"World"
       
-        boolean title:"Music", value:true
+        boolean title:"Music", value:true do |state|
+          puts state
+        end
         
-        boolean title:"Video"
+        boolean title:"Video" do |state|
+          puts state
+        end
         
-        float title:"Float Element", key:"slider", value:0.5
+        float title:"Float Element", key:"slider", value:0.5 do |value|
+          puts value
+        end
         
         decimal title:"decimal Element", key:"slider", value:0.5, fraction:2
         
         time title:"Time element", date: NSDate.date, key:"date1", mode: UIDatePickerModeTime
         
         elems = ["Ferrari", "McLaren", "Lotus"]
-        radio items: elems, selected:0, title:"Array", action:'action:'        
+        radio({items: elems, selected:0, title:"Array"})  do |state|
+          puts state
+        end      
       end
       
       #second Section
@@ -38,7 +46,9 @@ class RMDialogViewController < UIViewController
         component2 = ["A", "B"]
         picker items:[component, component2], value:"3 B", title:"Key"
         
-        segment items:["Option 1", "Option 2", "Option 3"], selected:1, title:"Radio"
+        segment items:["Option 1", "Option 2", "Option 3"], selected:1, title:"Radio" do |selected|
+          puts selected
+        end
         
       end.footer = "More controls will be added."
       
@@ -47,7 +57,8 @@ class RMDialogViewController < UIViewController
         label title:"Crazy", value:"Shit"
         
         elems =  {"Ferrari"=>"FerrariObj", "McLaren"=>"McLarenObj", "Mercedes"=>"MercedesObj"}
-        radio items:elems, selected:0, title:"Hash", action:'action:'
+        
+        radio( items:elems, selected:0, title:"Hash")
         
         # button
         button title:"open Apple.com" do

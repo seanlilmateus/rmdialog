@@ -59,6 +59,8 @@ I'll welcome any contribution, so feel free to extend, correct any code in this 
 	- QLoadingElement
 	- more ...
 - Element Customization design 
+- Accessibility
+- VoiceOver
 
 ## Thanks
 I'd just like to thank [escoz](https://github.com/escoz) and all [QuickDialog](https://github.com/escoz/QuickDialog) contributors for the great library
